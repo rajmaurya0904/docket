@@ -1,8 +1,10 @@
 # Docket
 
-**A lightning-fast, zero-dependency static documentation site generator built in TypeScript that reads raw markdown and generates interactive API explorers natively.**
+**A lightweight, zero-dependency Python tool that turns Markdown into fast, navigable documentation.**
 
-<!-- THE PROBLEM: 2-3 concrete lines on the annoying thing this removes. -->
+Many documentation generators are slow, bloated, and require heavy dependencies, making it hard to iterate quickly and keep docs in sync with code.
+
+They often force you to install large toolchains, rebuild entire sites for a single change, and struggle with modern markdown features.
 
 ## Example
 
