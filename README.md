@@ -26,7 +26,12 @@ pip install -e ".[dev]"
 
 ## Limitations
 
-<!-- Honest and short: what it does NOT do, known gaps. -->
+- Does not support custom HTML templates or theming; output is a fixed simple layout.
+- No built‑in search or indexing; you need external tools for site search.
+- Frontmatter parser only handles flat key‑value pairs; nested YAML structures are ignored.
+- No live‑reload server; you must re‑run the generator after changes.
+- Limited to Markdown input; other markup languages are not processed.
+- Currently only generates static HTML; no JavaScript interactivity beyond basic navigation.
 
 ## Development
 
