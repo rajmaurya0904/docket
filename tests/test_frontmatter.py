@@ -86,3 +86,31 @@ Line 2
 """
     _, content = parse_frontmatter(markdown)
     assert content == "Line 1\n\nLine 2"
+
+def test_crlf_line_endings():
+    markdown = "---\r\ntitle: Windows\r\n---\r\nBody\r\n"
+    metadata, content = parse_frontmatter(markdown)
+    assert metadata == {"title": "Windows"}
+    assert content == "Body"
+
+
+def test_quoted_values_are_unquoted():
+    markdown = '---\ntitle: "Quoted: title"\nname: \'single\'\n---\nx'
+    metadata, _ = parse_frontmatter(markdown)
+    assert metadata == {"title": "Quoted: title", "name": "single"}
+
+
+def test_comment_lines_are_ignored():
+    metadata, _ = parse_frontmatter("---\n# note\ntitle: A\n---\nx")
+    assert metadata == {"title": "A"}
+
+
+def test_value_may_contain_colon():
+    metadata, _ = parse_frontmatter("---\nurl: http://example.com:8080/x\n---\nx")
+    assert metadata == {"url": "http://example.com:8080/x"}
+
+
+def test_byte_order_mark_is_tolerated():
+    metadata, content = parse_frontmatter("﻿---\ntitle: A\n---\nbody")
+    assert metadata == {"title": "A"}
+    assert content == "body"
