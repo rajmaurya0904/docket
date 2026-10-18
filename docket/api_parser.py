@@ -100,6 +100,7 @@ class Endpoint:
     request_body: str = ""
     responses: list[Response] = field(default_factory=list)
     anchor: str = ""
+    source: str = "heading"
     warnings: list[str] = field(default_factory=list)
 
     @property
@@ -194,7 +195,7 @@ def parse_api_block(code: str) -> Endpoint:
     sig = match_signature(lines[first])
     if sig is None:
         raise ValueError(f"api block must start with 'METHOD /path', got {lines[first].strip()!r}")
-    endpoint = Endpoint(method=sig[0], path=sig[1])
+    endpoint = Endpoint(method=sig[0], path=sig[1], source="fence")
 
     payload_target: tuple[str, str] | None = None
     payload: list[str] = []
