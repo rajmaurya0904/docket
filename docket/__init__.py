@@ -1,7 +1,6 @@
-"""Docket
+"""Docket: a zero-dependency static documentation site generator.
 
-A lightning-fast, zero-dependency static documentation site generator built in
-TypeScript that reads raw markdown and generates interactive API explorers natively.
+Reads Markdown files and writes a static HTML site with interactive API explorers.
 """
 
 __version__ = "0.1.0"
