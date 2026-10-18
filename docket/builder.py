@@ -25,6 +25,10 @@ class BuildError(Exception):
     """A problem that stops the build (bad input, unreadable file, unsafe output path)."""
 
 
+class SourceError(BuildError):
+    """The source directory is missing, not a directory, or holds no Markdown."""
+
+
 @dataclass
 class Page:
     source: Path  # relative to the source directory
@@ -306,16 +310,16 @@ def build(
     """
     src = Path(source)
     if not src.exists():
-        raise BuildError(f"source directory not found: {src}")
+        raise SourceError(f"source directory not found: {src}")
     if not src.is_dir():
-        raise BuildError(f"source is not a directory: {src}")
+        raise SourceError(f"source is not a directory: {src}")
     out = Path(output) if output is not None else None
     if out is not None:
         _check_output(src, out)
 
     relatives = discover_markdown(src)
     if not relatives:
-        raise BuildError(f"no Markdown files found in {src}")
+        raise SourceError(f"no Markdown files found in {src}")
 
     warnings: list[str] = []
     pages: list[Page] = []
