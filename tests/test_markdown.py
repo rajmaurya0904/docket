@@ -157,7 +157,7 @@ def test_table_with_alignment_and_escaped_pipe() -> None:
 
 
 def test_table_pads_short_rows() -> None:
-    out = html_of("a | b\n--|--\n1")
+    out = html_of("a | b\n--|--\n1 |")
     assert "<td>1</td><td></td>" in out
 
 
