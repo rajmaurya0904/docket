@@ -64,14 +64,13 @@ def _count(n: int, noun: str) -> str:
     return f"{n} {noun}{'' if n == 1 else 's'}"
 
 
-def _report(result: BuildResult, stream=sys.stdout) -> None:
+def _report(result: BuildResult) -> None:
     for warning in result.warnings:
         print(f"warning: {warning}", file=sys.stderr)
     n = len(result.pages)
     print(
         f"{_count(n, 'page')}, {_count(result.endpoints, 'API endpoint')}, "
         f"{_count(len(result.warnings), 'warning')}",
-        file=stream,
     )
 
 
