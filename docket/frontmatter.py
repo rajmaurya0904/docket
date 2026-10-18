@@ -1,50 +1,43 @@
-"""Frontmatter parser for docket."""
+"""A small frontmatter parser: flat ``key: value`` metadata between ``---`` fences."""
 
-def parse_frontmatter(markdown: str):
-    """Parse YAML-like frontmatter from markdown string.
+from __future__ import annotations
 
-    Returns a tuple (metadata_dict, content_string).
-    If no valid frontmatter is found, returns ({}, markdown).
+
+def _unquote(value: str) -> str:
+    """Strip one pair of matching single or double quotes around ``value``."""
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1]
+    return value
+
+
+def parse_frontmatter(markdown: str) -> tuple[dict[str, str], str]:
+    """Split ``markdown`` into ``(metadata, body)``.
+
+    Frontmatter must start on the very first line with ``---`` and end at the next
+    line that is only ``---``. Each metadata line is ``key: value`` (split on the
+    first colon, so values may contain colons); matching quotes around a value are
+    removed, lines starting with ``#`` are comments, and lines without a colon are
+    ignored. Nested YAML is not supported. If there is no opening fence, or the
+    fence is never closed, the input is returned unchanged with empty metadata.
     """
-    # Check if markdown starts with a frontmatter delimiter
-    if not markdown.startswith('---\n'):
-        return {}, markdown
-
-    # Find the closing delimiter
+    if markdown.startswith("﻿"):
+        markdown = markdown[1:]
     lines = markdown.splitlines()
-    # We already know the first line is '---'
-    # Look for the next line that is exactly '---' (after possible whitespace?)
-    # According to common spec, the closing delimiter must be on its own line.
-    closing_index = -1
-    for i, line in enumerate(lines[1:], start=1):  # start after first line
-        if line.strip() == '---':
-            closing_index = i
-            break
-
-    if closing_index == -1:
-        # No closing delimiter, treat as no frontmatter
+    if not lines or lines[0].strip() != "---":
         return {}, markdown
 
-    # Extract frontmatter text (between the delimiters, exclusive)
-    frontmatter_lines = lines[1:closing_index]
-    # The content is everything after the closing delimiter line
-    content_lines = lines[closing_index+1:]
-    content = '\n'.join(content_lines)
+    closing = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), -1)
+    if closing == -1:
+        return {}, markdown
 
-    # Parse frontmatter lines into a dict
-    metadata = {}
-    for line in frontmatter_lines:
-        # Skip empty lines
-        if not line.strip():
+    metadata: dict[str, str] = {}
+    for line in lines[1:closing]:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or ":" not in line:
             continue
-        # Split on first colon
-        if ':' not in line:
-            # If no colon, maybe ignore or treat as key with empty value?
-            # We'll ignore for simplicity.
-            continue
-        key, value = line.split(':', 1)
+        key, value = line.split(":", 1)
         key = key.strip()
-        value = value.strip()
-        metadata[key] = value
+        if key:
+            metadata[key] = _unquote(value.strip())
 
-    return metadata, content
+    return metadata, "\n".join(lines[closing + 1 :])
